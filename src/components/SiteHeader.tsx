@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SiteHeader = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <div className="container max-w-6xl flex items-center justify-between h-16 px-6">
@@ -29,7 +30,7 @@ const SiteHeader = () => {
               {item}
             </a>
           ))}
-          <Button variant="emerald" size="sm">
+          <Button variant="emerald" size="sm" onClick={() => navigate("/auth")}>
             Access Portal
           </Button>
         </nav>
@@ -57,7 +58,7 @@ const SiteHeader = () => {
               {item}
             </a>
           ))}
-          <Button variant="emerald" size="sm" className="w-full mt-2">
+          <Button variant="emerald" size="sm" className="w-full mt-2" onClick={() => { setMobileOpen(false); navigate("/auth"); }}>
             Access Portal
           </Button>
         </div>
