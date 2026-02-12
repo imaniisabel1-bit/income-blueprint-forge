@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      calculation_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          input_pages: number | null
+          input_price: number | null
+          result_profit: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          input_pages?: number | null
+          input_price?: number | null
+          result_profit?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          input_pages?: number | null
+          input_price?: number | null
+          result_profit?: number | null
+        }
+        Relationships: []
+      }
+      income_kits: {
+        Row: {
+          base_pages: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          niche: string | null
+          target_price: number | null
+        }
+        Insert: {
+          base_pages?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          niche?: string | null
+          target_price?: number | null
+        }
+        Update: {
+          base_pages?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          niche?: string | null
+          target_price?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
