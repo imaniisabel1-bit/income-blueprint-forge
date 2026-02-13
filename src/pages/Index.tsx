@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import GlazeMeter from "@/components/GlazeMeter";
 import BusinessCalculator from "@/components/BusinessCalculator";
 import ProductLibrary from "@/components/ProductLibrary";
+import PodcastSection from "@/components/PodcastSection";
 import RealWorldLab from "@/components/RealWorldLab";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -15,6 +16,7 @@ const Index = () => {
         <GlazeMeter />
         <BusinessCalculator />
         <ProductLibrary />
+        <PodcastSection />
         <RealWorldLab />
       </main>
       <SiteFooter />

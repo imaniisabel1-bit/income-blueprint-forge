@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Calculator, ChevronDown, TrendingUp } from "lucide-react";
+import { Calculator, ChevronDown, TrendingUp, Target, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,6 +23,7 @@ interface IncomeKit {
 const PRINTING_COST_PER_PAGE = 0.012;
 const AMAZON_ROYALTY_RATE = 0.6;
 const GLAZE_TAX = 0.20; // 20% hidden costs
+const DEFAULT_NICHE_MARKET_SIZE = 5000; // estimated monthly buyers in a niche
 
 const BusinessCalculator = () => {
   const [kits, setKits] = useState<IncomeKit[]>([]);
@@ -30,6 +32,8 @@ const BusinessCalculator = () => {
   const [price, setPrice] = useState(12.99);
   const [result, setResult] = useState<{ grossProfit: number; netProfit: number; glazeTax: number; printingCost: number } | null>(null);
   const [logged, setLogged] = useState(false);
+  const [monthlyGoal, setMonthlyGoal] = useState<string>("");
+  const [velocity, setVelocity] = useState<{ salesNeeded: number; dailySales: number; saturationPct: number } | null>(null);
 
   useEffect(() => {
     const fetchKits = async () => {
@@ -59,6 +63,17 @@ const BusinessCalculator = () => {
 
     setResult({ grossProfit, netProfit, glazeTax, printingCost });
     setLogged(false);
+
+    // Calculate velocity if goal is set
+    const goal = parseFloat(monthlyGoal);
+    if (goal > 0 && netProfit > 0) {
+      const salesNeeded = Math.ceil(goal / netProfit);
+      const dailySales = Math.round((salesNeeded / 30) * 10) / 10;
+      const saturationPct = Math.round((salesNeeded / DEFAULT_NICHE_MARKET_SIZE) * 100);
+      setVelocity({ salesNeeded, dailySales, saturationPct });
+    } else {
+      setVelocity(null);
+    }
 
     // Log to calculation_logs (data sovereignty)
     await supabase.from("calculation_logs").insert({
@@ -136,6 +151,26 @@ const BusinessCalculator = () => {
             </div>
           </div>
 
+          {/* Monthly Goal */}
+          <div className="mb-8">
+            <label className="font-mono-system text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3 block">
+              Monthly Income Goal (optional)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono-system text-muted-foreground text-sm">$</span>
+              <Input
+                type="number"
+                placeholder="2000"
+                value={monthlyGoal}
+                onChange={(e) => setMonthlyGoal(e.target.value)}
+                className="pl-7 bg-secondary border-border font-mono-system text-sm"
+              />
+            </div>
+            <p className="font-mono-system text-[10px] text-muted-foreground mt-1">
+              Enter your target to see the Volume & Velocity breakdown
+            </p>
+          </div>
+
           {/* Calculate */}
           <Button variant="emerald" size="lg" className="w-full mb-8" onClick={calculate}>
             <Calculator className="h-4 w-4 mr-2" />
@@ -166,6 +201,45 @@ const BusinessCalculator = () => {
               <p className="font-mono-system text-[10px] text-muted-foreground text-center mt-4">
                 Per unit sold · Amazon 60% royalty · {logged ? "✓ Logged to your vault" : "Logging..."}
               </p>
+
+              {/* Volume & Velocity */}
+              {velocity && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Target className="h-4 w-4 text-emerald-glow" />
+                    <p className="font-mono-system text-xs tracking-[0.2em] uppercase text-emerald-glow font-bold">
+                      Volume & Velocity
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Monthly Sales Needed</p>
+                      <p className="font-serif-display text-2xl font-bold text-foreground">{velocity.salesNeeded.toLocaleString()}</p>
+                      <p className="font-mono-system text-[10px] text-muted-foreground">units/month</p>
+                    </div>
+                    <div>
+                      <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Daily Grind</p>
+                      <p className="font-serif-display text-2xl font-bold text-foreground">{velocity.dailySales}</p>
+                      <p className="font-mono-system text-[10px] text-muted-foreground">sales/day</p>
+                    </div>
+                    <div>
+                      <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Niche Saturation</p>
+                      <p className={`font-serif-display text-2xl font-bold ${velocity.saturationPct > 50 ? 'text-destructive' : velocity.saturationPct > 25 ? 'text-bone-muted' : 'text-emerald-glow'}`}>
+                        {velocity.saturationPct}%
+                      </p>
+                      <p className="font-mono-system text-[10px] text-muted-foreground">of est. market</p>
+                    </div>
+                  </div>
+                  {velocity.saturationPct > 50 && (
+                    <div className="mt-4 flex items-start gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                      <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                      <p className="font-mono-system text-[10px] text-destructive">
+                        High saturation warning — you'd need over 50% of the estimated niche market. Consider diversifying into adjacent niches or raising your price point.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
