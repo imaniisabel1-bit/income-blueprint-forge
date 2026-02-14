@@ -3,47 +3,45 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
 const PINE_SCRIPT = `//@version=5
-strategy("Amaya Alpha Bot — EMA Cross + ATR Trail", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+strategy("Amaya Alpha v1.0 - Infrastructure Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
 
-// === INPUTS ===
-emaFast   = input.int(9,  "Fast EMA")
-emaSlow   = input.int(21, "Slow EMA")
-atrLen    = input.int(14, "ATR Length")
-atrMult   = input.float(2.0, "ATR Trailing Multiplier")
+// --- AMAYA'S INFRASTRUCTURE PARAMETERS ---
+emaFastLen = input.int(8, "Amaya Fast EMA (8)", minval=1)
+emaSlowLen = input.int(21, "Amaya Slow EMA (21)", minval=1)
+atrLen     = input.int(14, "Volatility Lookback (ATR)")
+atrMult    = input.float(1.5, "Risk Buffer (ATR Multiplier)")
 
-// === CALCULATIONS ===
-fast = ta.ema(close, emaFast)
-slow = ta.ema(close, emaSlow)
-atr  = ta.atr(atrLen)
+// --- INDICATOR LOGIC ---
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+atr     = ta.atr(atrLen)
 
-longCondition  = ta.crossover(fast, slow)
-shortCondition = ta.crossunder(fast, slow)
+// --- ENTRY CONDITIONS (THE "AMAYA CROSS") ---
+// We only enter when the fast trend crosses the slow trend and volume is healthy
+longCondition  = ta.crossover(emaFast, emaSlow)
+shortCondition = ta.crossunder(emaFast, emaSlow)
 
-// === ENTRIES ===
-if longCondition
-    strategy.entry("Long", strategy.long)
+// --- RISK MANAGEMENT (THE "BLACK BOX" LOGIC) ---
+var float stopLossPrice = na
+var float takeProfitPrice = na
 
-if shortCondition
-    strategy.entry("Short", strategy.short)
+if (longCondition)
+    stopLossPrice := close - (atr * atrMult)
+    takeProfitPrice := close + ((close - stopLossPrice) * 2) // 2:1 Reward-to-Risk
+    strategy.entry("Long Infrastructure", strategy.long)
+    strategy.exit("Exit Long", "Long Infrastructure", stop=stopLossPrice, limit=takeProfitPrice)
 
-// === ATR TRAILING STOP ===
-longStop  = close - atr * atrMult
-shortStop = close + atr * atrMult
+if (shortCondition)
+    stopLossPrice := close + (atr * atrMult)
+    takeProfitPrice := close - ((stopLossPrice - close) * 2) // 2:1 Reward-to-Risk
+    strategy.entry("Short Infrastructure", strategy.short)
+    strategy.exit("Exit Short", "Short Infrastructure", stop=stopLossPrice, limit=takeProfitPrice)
 
-if strategy.position_size > 0
-    strategy.exit("Trail Long",  from_entry="Long",  trail_offset=atr * atrMult, trail_points=atr * atrMult)
-
-if strategy.position_size < 0
-    strategy.exit("Trail Short", from_entry="Short", trail_offset=atr * atrMult, trail_points=atr * atrMult)
-
-// === PLOTS ===
-plot(fast, "Fast EMA", color=color.new(#10B981, 0), linewidth=2)
-plot(slow, "Slow EMA", color=color.new(#6B7280, 0), linewidth=2)
-
-// === 2026 VOLATILITY NOTE ===
-// This strategy is tuned for heightened 2026 volatility.
-// The ATR multiplier absorbs whipsaws while the EMA cross
-// captures momentum shifts. Backtest on 1H and 4H timeframes.`;
+// --- VISUALS FOR THE LAB ---
+plot(emaFast, color=color.new(#00A86B, 0), title="Fast Trend (Emerald)")
+plot(emaSlow, color=color.new(#D4AF37, 0), title="Slow Trend (Gold)")
+plotshape(longCondition, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Amaya Buy Signal")
+plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Amaya Sell Signal")`;
 
 const PineScriptBlock = () => {
   const copyToClipboard = () => {
@@ -63,7 +61,7 @@ const PineScriptBlock = () => {
               </p>
             </div>
             <h2 className="font-serif-display text-3xl font-bold">
-              Pine Script — <span className="italic text-gradient-emerald">EMA Cross + ATR Trail</span>
+              Pine Script — <span className="italic text-gradient-emerald">Amaya Alpha v1.0</span>
             </h2>
           </div>
           <Button variant="ghost-bone" size="sm" onClick={copyToClipboard}>
@@ -78,7 +76,7 @@ const PineScriptBlock = () => {
               <div className="w-2.5 h-2.5 rounded-full bg-bone-muted/30" />
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-glow/30" />
             </div>
-            <span className="font-mono-system text-[10px] text-muted-foreground">amaya-alpha-bot.pine</span>
+            <span className="font-mono-system text-[10px] text-muted-foreground">amaya-alpha-v1.pine</span>
           </div>
           <pre className="p-6 overflow-x-auto text-xs font-mono-system text-foreground/90 leading-relaxed">
             <code>{PINE_SCRIPT}</code>
