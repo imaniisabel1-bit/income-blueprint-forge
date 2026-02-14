@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, BookOpen, Target, Lock, MessageSquare, Calculator, X, Play } from "lucide-react";
+import { LogOut, BookOpen, Target, Lock, MessageSquare, Calculator, X, Play, TrendingUp } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const kits = [
@@ -157,17 +157,29 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Quick Calculator Link */}
-        <a
-          href="/#calculator"
-          className="flex items-center gap-3 p-4 rounded-lg border border-emerald-light/20 bg-secondary/50 hover:border-emerald-light/40 transition-colors mb-8"
-        >
-          <Calculator className="h-5 w-5 text-emerald-glow" />
-          <div>
-            <p className="font-mono-system text-sm font-bold">Business Reality Calculator</p>
-            <p className="font-mono-system text-xs text-muted-foreground">Run the real numbers on any kit</p>
-          </div>
-        </a>
+        {/* Quick Links */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          <a
+            href="/#calculator"
+            className="flex items-center gap-3 p-4 rounded-lg border border-emerald-light/20 bg-secondary/50 hover:border-emerald-light/40 transition-colors"
+          >
+            <Calculator className="h-5 w-5 text-emerald-glow" />
+            <div>
+              <p className="font-mono-system text-sm font-bold">Reality Calculator</p>
+              <p className="font-mono-system text-xs text-muted-foreground">Run the real numbers on any kit</p>
+            </div>
+          </a>
+          <button
+            onClick={() => navigate("/trading-dashboard")}
+            className="flex items-center gap-3 p-4 rounded-lg border border-emerald-light/20 bg-secondary/50 hover:border-emerald-light/40 transition-colors text-left"
+          >
+            <TrendingUp className="h-5 w-5 text-emerald-glow" />
+            <div>
+              <p className="font-mono-system text-sm font-bold">The Trading Floor</p>
+              <p className="font-mono-system text-xs text-muted-foreground">Charts, position sizing &amp; trade log</p>
+            </div>
+          </button>
+        </div>
 
         {/* Kits Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
