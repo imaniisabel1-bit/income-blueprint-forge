@@ -1,4 +1,5 @@
-import { ArrowUpRight, BookOpen, Target, Lock, MessageSquare } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, BookOpen, Target, Lock, MessageSquare, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -10,7 +11,7 @@ const STRIPE_PRODUCTS = {
   vault: { priceId: "price_1T0aCaDWt6dw74BcI9BVvY3w", mode: "subscription" as const },
 };
 
-const products = [
+const defaultProducts = [
   {
     icon: BookOpen,
     tag: "LAUNCH KIT",
@@ -51,6 +52,8 @@ const products = [
 
 const ProductLibrary = () => {
   const navigate = useNavigate();
+  const [products, setProducts] = useState(defaultProducts);
+  const [generatingIndex, setGeneratingIndex] = useState<number | null>(null);
 
   const handleCheckout = async (stripe: { priceId: string; mode: string } | null) => {
     if (!stripe) {
@@ -70,11 +73,45 @@ const ProductLibrary = () => {
     });
 
     if (error || !data?.url) {
-      toast({ title: "Checkout error", description: error?.message || "Try again.", variant: "destructive" });
+      toast({ title: "Checkout error", description: "Something went wrong. Try again.", variant: "destructive" });
       return;
     }
 
     window.open(data.url, "_blank");
+  };
+
+  const handleGenerateDescription = async (index: number) => {
+    const product = products[index];
+    setGeneratingIndex(index);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-description", {
+        body: {
+          title: product.title,
+          tag: product.tag,
+          price: product.price,
+          features: product.features,
+        },
+      });
+
+      if (error || !data?.description) {
+        toast({
+          title: "Generation failed",
+          description: data?.error || "Could not generate description. Try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProducts((prev) =>
+        prev.map((p, i) => (i === index ? { ...p, description: data.description } : p))
+      );
+      toast({ title: "Description updated ✨", description: "AI-generated copy applied." });
+    } catch {
+      toast({ title: "Error", description: "Failed to connect to AI service.", variant: "destructive" });
+    } finally {
+      setGeneratingIndex(null);
+    }
   };
 
   return (
@@ -95,6 +132,7 @@ const ProductLibrary = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {products.map((product, index) => {
             const Icon = product.icon;
+            const isGenerating = generatingIndex === index;
             return (
               <div
                 key={index}
@@ -104,7 +142,21 @@ const ProductLibrary = () => {
                   <span className="font-mono-system text-[10px] tracking-[0.2em] uppercase px-3 py-1 rounded-full border border-emerald-light/20 text-emerald-glow">
                     {product.tag}
                   </span>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-glow transition-colors" />
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleGenerateDescription(index)}
+                      disabled={isGenerating}
+                      className="p-1.5 rounded-md text-muted-foreground hover:text-emerald-glow hover:bg-secondary transition-colors disabled:opacity-50"
+                      title="Generate AI description"
+                    >
+                      {isGenerating ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-glow transition-colors" />
+                  </div>
                 </div>
 
                 <div className="w-10 h-10 rounded-lg bg-gradient-emerald flex items-center justify-center mb-5">
