@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Shield, Terminal, Users, Copy, Loader2, Trash2, Plus } from "lucide-react";
+import { Shield, Terminal, Users, Copy, Loader2, Trash2, Plus, Rocket } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import LaunchCommand from "@/components/admin/LaunchCommand";
 
 const AMAYA_ALPHA_V2 = `//@version=5
 strategy("Amaya Alpha v2.0 - Private Proprietary", overlay=true, initial_capital=10000, currency=currency.USD)
@@ -180,8 +181,11 @@ const AdminPortal = () => {
       </header>
 
       <main className="max-w-7xl mx-auto p-6">
-        <Tabs defaultValue="vault" className="space-y-6">
+        <Tabs defaultValue="launch" className="space-y-6">
           <TabsList className="bg-secondary border border-border">
+            <TabsTrigger value="launch" className="font-mono-system text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Rocket className="h-3.5 w-3.5" /> Launch Command
+            </TabsTrigger>
             <TabsTrigger value="vault" className="font-mono-system text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Terminal className="h-3.5 w-3.5" /> Script Vault
             </TabsTrigger>
@@ -192,6 +196,11 @@ const AdminPortal = () => {
               <Users className="h-3.5 w-3.5" /> Invite Access
             </TabsTrigger>
           </TabsList>
+
+          {/* LAUNCH COMMAND */}
+          <TabsContent value="launch">
+            <LaunchCommand />
+          </TabsContent>
 
           {/* SCRIPT VAULT */}
           <TabsContent value="vault">
