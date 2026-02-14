@@ -6,6 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Systems from "./pages/Systems";
+import Lab from "./pages/Lab";
+import Podcast from "./pages/Podcast";
+import About from "./pages/About";
+import KitDetail from "./pages/KitDetail";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TradingDashboard from "./pages/TradingDashboard";
@@ -22,6 +27,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/systems" element={<Systems />} />
+          <Route path="/lab" element={<Lab />} />
+          <Route path="/podcast" element={<Podcast />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/kits/:id" element={<KitDetail />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/terms" element={<TermsOfService />} />
