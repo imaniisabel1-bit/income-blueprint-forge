@@ -5,6 +5,7 @@ import BusinessCalculator from "@/components/BusinessCalculator";
 import ProductLibrary from "@/components/ProductLibrary";
 import PodcastSection from "@/components/PodcastSection";
 import RealWorldLab from "@/components/RealWorldLab";
+import NewsletterSection from "@/components/NewsletterSection";
 import SiteFooter from "@/components/SiteFooter";
 
 const Index = () => {
@@ -18,6 +19,7 @@ const Index = () => {
         <ProductLibrary />
         <PodcastSection />
         <RealWorldLab />
+        <NewsletterSection />
       </main>
       <SiteFooter />
     </div>
