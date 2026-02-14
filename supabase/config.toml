@@ -1,1 +1,4 @@
 project_id = "wkjcqfamipvnofahwail"
+
+[functions.optimize-trades]
+verify_jwt = false
