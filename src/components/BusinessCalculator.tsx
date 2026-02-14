@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calculator, ChevronDown, TrendingUp, Target, AlertTriangle } from "lucide-react";
+import { Calculator, Target, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 
 interface IncomeKit {
@@ -20,26 +26,68 @@ interface IncomeKit {
   target_price: number | null;
 }
 
+// Waterfall cost constants
 const PRINTING_COST_PER_PAGE = 0.012;
-const AMAZON_ROYALTY_RATE = 0.6;
-const GLAZE_TAX = 0.20; // 20% hidden costs
-const DEFAULT_NICHE_MARKET_SIZE = 5000; // estimated monthly buyers in a niche
+const AMAZON_FIXED_FEE = 3.25;
+const AMAZON_COMMISSION_RATE = 0.40; // 40%
+const AD_SPEND_RATE = 0.20; // 20% of gross
+const TAX_RESERVE_RATE = 0.25; // 25% of net before tax
+const DEFAULT_NICHE_MARKET_SIZE = 5000;
+
+const TERM_DEFINITIONS: Record<string, string> = {
+  "Gross Revenue": "The total money coming in before anyone (including Uncle Sam) touches it.",
+  "Printing Fee": "Amazon's per-unit printing cost based on page count. This is non-negotiable.",
+  "Amazon Commission": "Amazon takes 40% of your list price for distribution, fulfillment, and platform access.",
+  "Ad-Ceiling": "The maximum you can spend on marketing before you start losing money on every sale. We target 20%.",
+  "Tax Reserve": "Money that isn't yours. Put this in a separate high-yield savings account immediately.",
+  "Take-Home Profit": "What actually hits your bank account after every cost is subtracted. This is your reality number.",
+  "EBITDA": "Earnings Before Interest, Taxes, Depreciation, and Amortization. This is your 'Business Strength' score.",
+};
+
+const TermLabel = ({ term, label }: { term: string; label?: string }) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex items-center gap-1 cursor-help border-b border-dashed border-muted-foreground/40">
+          {label || term}
+          <Info className="h-2.5 w-2.5 text-muted-foreground" />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs bg-card border-border">
+        <p className="font-mono-system text-xs">
+          <span className="text-emerald-glow font-bold">{term}:</span>{" "}
+          {TERM_DEFINITIONS[term]}
+        </p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
 
 const BusinessCalculator = () => {
   const [kits, setKits] = useState<IncomeKit[]>([]);
   const [selectedKit, setSelectedKit] = useState<string>("");
   const [pages, setPages] = useState(120);
-  const [price, setPrice] = useState(12.99);
-  const [result, setResult] = useState<{ grossProfit: number; netProfit: number; glazeTax: number; printingCost: number } | null>(null);
+  const [price, setPrice] = useState(15.0);
+  const [result, setResult] = useState<{
+    grossRevenue: number;
+    printingFee: number;
+    amazonCommission: number;
+    adSpend: number;
+    taxReserve: number;
+    takeHome: number;
+  } | null>(null);
   const [logged, setLogged] = useState(false);
   const [monthlyGoal, setMonthlyGoal] = useState<string>("");
-  const [velocity, setVelocity] = useState<{ salesNeeded: number; dailySales: number; saturationPct: number } | null>(null);
+  const [velocity, setVelocity] = useState<{
+    salesNeeded: number;
+    dailySales: number;
+    saturationPct: number;
+    highVelocity: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const fetchKits = async () => {
-      const { data } = await supabase
-        .from("income_kits")
-        .select("*");
+      const { data } = await supabase.from("income_kits").select("*");
       if (data) setKits(data as IncomeKit[]);
     };
     fetchKits();
@@ -55,31 +103,34 @@ const BusinessCalculator = () => {
   };
 
   const calculate = async () => {
-    const printingCost = pages * PRINTING_COST_PER_PAGE;
-    const amazonRoyalty = price * AMAZON_ROYALTY_RATE;
-    const grossProfit = amazonRoyalty - printingCost;
-    const glazeTax = grossProfit * GLAZE_TAX;
-    const netProfit = grossProfit - glazeTax;
+    // Waterfall calculation
+    const grossRevenue = price;
+    const printingFee = AMAZON_FIXED_FEE + pages * PRINTING_COST_PER_PAGE;
+    const amazonCommission = price * AMAZON_COMMISSION_RATE;
+    const adSpend = price * AD_SPEND_RATE;
+    const preTaxNet = grossRevenue - printingFee - amazonCommission - adSpend;
+    const taxReserve = Math.max(0, preTaxNet * TAX_RESERVE_RATE);
+    const takeHome = Math.max(0, preTaxNet - taxReserve);
 
-    setResult({ grossProfit, netProfit, glazeTax, printingCost });
+    setResult({ grossRevenue, printingFee, amazonCommission, adSpend, taxReserve, takeHome });
     setLogged(false);
 
-    // Calculate velocity if goal is set
+    // Volume & Velocity
     const goal = parseFloat(monthlyGoal);
-    if (goal > 0 && netProfit > 0) {
-      const salesNeeded = Math.ceil(goal / netProfit);
+    if (goal > 0 && takeHome > 0) {
+      const salesNeeded = Math.ceil(goal / takeHome);
       const dailySales = Math.round((salesNeeded / 30) * 10) / 10;
       const saturationPct = Math.round((salesNeeded / DEFAULT_NICHE_MARKET_SIZE) * 100);
-      setVelocity({ salesNeeded, dailySales, saturationPct });
+      setVelocity({ salesNeeded, dailySales, saturationPct, highVelocity: dailySales > 50 });
     } else {
       setVelocity(null);
     }
 
-    // Log to calculation_logs (data sovereignty)
+    // Log to calculation_logs
     await supabase.from("calculation_logs").insert({
       input_price: price,
       input_pages: pages,
-      result_profit: parseFloat(netProfit.toFixed(2)),
+      result_profit: parseFloat(takeHome.toFixed(2)),
     } as any);
     setLogged(true);
   };
@@ -95,7 +146,7 @@ const BusinessCalculator = () => {
             Run the <span className="italic text-gradient-emerald">Real</span> Numbers
           </h2>
           <p className="font-mono-system text-sm text-muted-foreground max-w-lg mx-auto">
-            No inflated projections. We subtract printing, Amazon's cut, and the "Glaze Tax" (hidden costs gurus never mention).
+            The full waterfall: Printing, Amazon's cut, Ad-Spend, and Tax Reserve. No inflated projections.
           </p>
         </div>
 
@@ -133,7 +184,9 @@ const BusinessCalculator = () => {
                 step={10}
                 className="mb-2"
               />
-              <p className="font-mono-system text-2xl font-bold text-foreground">{pages} <span className="text-sm text-muted-foreground">pages</span></p>
+              <p className="font-mono-system text-2xl font-bold text-foreground">
+                {pages} <span className="text-sm text-muted-foreground">pages</span>
+              </p>
             </div>
             <div>
               <label className="font-mono-system text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3 block">
@@ -177,29 +230,49 @@ const BusinessCalculator = () => {
             Calculate Reality Profit
           </Button>
 
-          {/* Result */}
+          {/* Result — Waterfall Breakdown */}
           {result && (
             <div className="rounded-lg border border-emerald-light/20 bg-secondary/50 p-6 animate-fade-in">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center mb-4">
                 <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Printing</p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.printingCost.toFixed(2)}</p>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                    <TermLabel term="Gross Revenue" />
+                  </p>
+                  <p className="font-mono-system text-lg font-bold text-foreground">${result.grossRevenue.toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Gross Profit</p>
-                  <p className="font-mono-system text-lg font-bold text-foreground">${result.grossProfit.toFixed(2)}</p>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                    <TermLabel term="Printing Fee" />
+                  </p>
+                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.printingFee.toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Glaze Tax (20%)</p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.glazeTax.toFixed(2)}</p>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                    <TermLabel term="Amazon Commission" label="Amazon (40%)" />
+                  </p>
+                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.amazonCommission.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                    <TermLabel term="Ad-Ceiling" label="Ad-Spend (20%)" />
+                  </p>
+                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.adSpend.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                    <TermLabel term="Tax Reserve" label="Tax Reserve (25%)" />
+                  </p>
+                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.taxReserve.toFixed(2)}</p>
                 </div>
                 <div className="border-l border-emerald-light/20 pl-4">
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow mb-1">Reality Profit</p>
-                  <p className="font-serif-display text-3xl font-bold text-gradient-emerald">${result.netProfit.toFixed(2)}</p>
+                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow mb-1">
+                    <TermLabel term="Take-Home Profit" label="Take-Home" />
+                  </p>
+                  <p className="font-serif-display text-3xl font-bold text-gradient-emerald">${result.takeHome.toFixed(2)}</p>
                 </div>
               </div>
-              <p className="font-mono-system text-[10px] text-muted-foreground text-center mt-4">
-                Per unit sold · Amazon 60% royalty · {logged ? "✓ Logged to your vault" : "Logging..."}
+              <p className="font-mono-system text-[10px] text-muted-foreground text-center">
+                Per unit sold · Full waterfall applied · {logged ? "✓ Logged to your vault" : "Logging..."}
               </p>
 
               {/* Volume & Velocity */}
@@ -218,7 +291,7 @@ const BusinessCalculator = () => {
                       <p className="font-mono-system text-[10px] text-muted-foreground">units/month</p>
                     </div>
                     <div>
-                      <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Daily Grind</p>
+                      <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">Daily Velocity</p>
                       <p className="font-serif-display text-2xl font-bold text-foreground">{velocity.dailySales}</p>
                       <p className="font-mono-system text-[10px] text-muted-foreground">sales/day</p>
                     </div>
@@ -230,7 +303,15 @@ const BusinessCalculator = () => {
                       <p className="font-mono-system text-[10px] text-muted-foreground">of est. market</p>
                     </div>
                   </div>
-                  {velocity.saturationPct > 50 && (
+                  {velocity.highVelocity && (
+                    <div className="mt-4 flex items-start gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                      <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                      <p className="font-mono-system text-[10px] text-destructive">
+                        ⚠️ High Velocity required. Amaya recommends niche-splitting to reduce competition.
+                      </p>
+                    </div>
+                  )}
+                  {!velocity.highVelocity && velocity.saturationPct > 50 && (
                     <div className="mt-4 flex items-start gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
                       <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                       <p className="font-mono-system text-[10px] text-destructive">
