@@ -45,7 +45,7 @@ const PodcastSection = () => {
     }
     setSubmitting(true);
     try {
-      await (supabase as any).from("newsletter_subscribers").insert({ email });
+      await supabase.from("newsletter_subscribers").insert({ email });
       setSubmitted(true);
       toast({ title: "You're in the Sol-System ✓", description: "You'll get 2026 enterprise alerts and launch notifications." });
     } catch {
