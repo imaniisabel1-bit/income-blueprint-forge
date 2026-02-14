@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mail, ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { Mail, ArrowRight, Loader2, CheckCircle, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,14 +46,24 @@ const NewsletterSection = () => {
         <h2 className="font-serif-display text-3xl md:text-4xl font-bold mb-3">
           Join the <span className="italic text-gradient-emerald">Sol-System</span>
         </h2>
-        <p className="font-mono-system text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-          Get 2026 Asset Alerts — curated niche data, velocity reports, and enterprise blueprints. No glaze.
+        <p className="font-mono-system text-sm text-muted-foreground mb-2 max-w-md mx-auto">
+          Most people are still looking at 2023 data. Amaya Sol just updated the Black Box with the latest 2026 trends.
+        </p>
+        <p className="font-mono-system text-xs text-emerald-glow font-bold mb-6">
+          Get our free 2026 Asset Velocity Report instantly.
         </p>
 
         {subscribed ? (
-          <div className="flex items-center justify-center gap-2 p-4 rounded-lg border border-emerald-light/20 bg-secondary/50">
-            <CheckCircle className="h-5 w-5 text-emerald-glow" />
-            <p className="font-mono-system text-sm text-emerald-glow font-bold">You're in. Check your inbox.</p>
+          <div className="flex flex-col items-center gap-3 p-6 rounded-lg border border-emerald-light/20 bg-secondary/50">
+            <CheckCircle className="h-6 w-6 text-emerald-glow" />
+            <p className="font-mono-system text-sm text-emerald-glow font-bold">You're in the Sol-System.</p>
+            <Link
+              to="/velocity-report"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-emerald font-mono-system text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <FileText className="h-4 w-4" />
+              Download Your Velocity Report →
+            </Link>
           </div>
         ) : (
           <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
