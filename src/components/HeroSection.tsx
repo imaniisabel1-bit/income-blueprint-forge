@@ -34,11 +34,19 @@ const HeroSection = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.5s" }}>
-          <Button variant="emerald" size="lg">
+          <Button
+            variant="emerald"
+            size="lg"
+            onClick={() => document.getElementById("infrastructure")?.scrollIntoView({ behavior: "smooth" })}
+          >
             Access the Systems
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button variant="ghost-bone" size="lg">
+          <Button
+            variant="ghost-bone"
+            size="lg"
+            onClick={() => document.getElementById("reality")?.scrollIntoView({ behavior: "smooth" })}
+          >
             See the Reality
           </Button>
         </div>
