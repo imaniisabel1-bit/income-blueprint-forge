@@ -1,5 +1,9 @@
-import { Mic, Play, Clock, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Mic, Play, Clock, Mail, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const PLACEHOLDER_EPISODES = [
   {
@@ -29,6 +33,28 @@ const PLACEHOLDER_EPISODES = [
 ];
 
 const PodcastSection = () => {
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      toast({ title: "Enter a valid email", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await supabase.from("newsletter_subscribers").insert({ email } as any);
+      setSubmitted(true);
+      toast({ title: "You're in the Sol-System ✓", description: "You'll get 2026 enterprise alerts and launch notifications." });
+    } catch {
+      toast({ title: "Something went wrong", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section id="podcast" className="py-24 px-6 bg-secondary/30">
       <div className="container max-w-5xl">
@@ -99,15 +125,36 @@ const PodcastSection = () => {
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="text-center">
-          <p className="font-mono-system text-xs text-muted-foreground mb-4">
-            Subscribe to get notified when episodes drop.
-          </p>
-          <Button variant="emerald" size="lg" disabled className="opacity-70 cursor-not-allowed">
-            <Mic className="h-4 w-4 mr-2" />
-            Launching Soon — Stay Tuned
-          </Button>
+        {/* Newsletter Signup */}
+        <div className="rounded-xl border border-emerald-light/20 bg-card p-8 md:p-10">
+          <div className="text-center mb-6">
+            <Mail className="h-6 w-6 text-emerald-glow mx-auto mb-3" />
+            <h3 className="font-serif-display text-2xl font-bold mb-2">Join the Sol-System</h3>
+            <p className="font-mono-system text-xs text-muted-foreground max-w-md mx-auto">
+              Get 2026 enterprise alerts and launch notifications. No spam — just systems.
+            </p>
+          </div>
+          {submitted ? (
+            <div className="flex items-center justify-center gap-2 py-4">
+              <CheckCircle className="h-5 w-5 text-emerald-glow" />
+              <p className="font-mono-system text-sm text-emerald-glow font-bold">You're in. Watch your inbox.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 bg-secondary border-border font-mono-system text-sm"
+                required
+              />
+              <Button variant="emerald" type="submit" disabled={submitting} className="shrink-0">
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Mail className="h-4 w-4 mr-2" />}
+                Subscribe
+              </Button>
+            </form>
+          )}
         </div>
       </div>
     </section>
