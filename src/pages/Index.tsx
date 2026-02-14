@@ -40,7 +40,7 @@ const Index = () => {
         <HeroSection />
 
         {/* Navigation Cards */}
-        <section className="py-24 px-6">
+        <section id="infrastructure" className="py-24 px-6 scroll-mt-16">
           <div className="container max-w-5xl">
             <div className="text-center mb-16">
               <p className="font-mono-system text-xs tracking-[0.3em] uppercase text-emerald-glow mb-4">
@@ -78,7 +78,9 @@ const Index = () => {
           </div>
         </section>
 
-        <NewsletterSection />
+        <div id="reality" className="scroll-mt-16">
+          <NewsletterSection />
+        </div>
       </main>
       <SiteFooter />
     </div>
