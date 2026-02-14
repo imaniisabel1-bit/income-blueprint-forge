@@ -16,6 +16,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TradingDashboard from "./pages/TradingDashboard";
 import VelocityReport from "./pages/VelocityReport";
 import IPCopyright from "./pages/IPCopyright";
+import EarningsDisclaimer from "./pages/EarningsDisclaimer";
 import NotFound from "./pages/NotFound";
 import FloatingMiniPlayer from "./components/FloatingMiniPlayer";
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/trading-dashboard" element={<TradingDashboard />} />
           <Route path="/velocity-report" element={<VelocityReport />} />
           <Route path="/ip-copyright" element={<IPCopyright />} />
+          <Route path="/earnings-disclaimer" element={<EarningsDisclaimer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
