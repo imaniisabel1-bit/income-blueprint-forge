@@ -16,6 +16,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TradingDashboard from "./pages/TradingDashboard";
 import VelocityReport from "./pages/VelocityReport";
 import NotFound from "./pages/NotFound";
+import FloatingMiniPlayer from "./components/FloatingMiniPlayer";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <FloatingMiniPlayer />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

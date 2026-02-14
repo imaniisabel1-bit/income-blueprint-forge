@@ -3,12 +3,15 @@ import SiteFooter from "@/components/SiteFooter";
 import TradingChart from "@/components/lab/TradingChart";
 import PineScriptBlock from "@/components/lab/PineScriptBlock";
 import LotSizeCalculator from "@/components/lab/LotSizeCalculator";
+import TradingTicker from "@/components/lab/TradingTicker";
 
 const Lab = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
       <main className="pt-16">
+        <TradingTicker />
+
         {/* Hero */}
         <section className="py-20 px-6 text-center">
           <p className="font-mono-system text-xs tracking-[0.3em] uppercase text-emerald-glow mb-4">

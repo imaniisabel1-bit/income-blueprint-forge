@@ -77,6 +77,7 @@ const BusinessCalculator = () => {
     monthlyNetProfit: number;
     catalogNeeded: number;
     salesPerTitle: number;
+    exitValuation: number;
   } | null>(null);
 
   useEffect(() => {
@@ -122,6 +123,8 @@ const BusinessCalculator = () => {
     const adjustedProfitPerTitle = profitPerTitleMonth * (1 - adSpendRate) * (1 - TAX_RESERVE_RATE);
     const catalogNeeded = Math.max(1, Math.ceil(goal / adjustedProfitPerTitle));
 
+    const exitValuation = monthlyNetProfit * 12 * 3.5;
+
     setResult({
       unitProfit,
       totalDailySales,
@@ -131,6 +134,7 @@ const BusinessCalculator = () => {
       monthlyNetProfit,
       catalogNeeded,
       salesPerTitle: dailySalesPerTitle,
+      exitValuation,
     });
 
     await supabase.from("calculation_logs").insert({
@@ -246,7 +250,32 @@ const BusinessCalculator = () => {
                 <p className="font-serif-display text-5xl md:text-6xl font-bold text-gradient-emerald">
                   ${result.monthlyNetProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
-              </div>
+               </div>
+
+               {/* 3-Year Exit Valuation */}
+               <div className="text-center mb-8 p-4 rounded-lg border border-emerald-light/20 bg-card">
+                 <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
+                   3-Year Exit Valuation (3.5× Annual)
+                 </p>
+                 <p className={`font-serif-display text-4xl md:text-5xl font-bold text-gradient-emerald ${result.exitValuation >= 100000 ? 'animate-milestone-glow' : ''}`}>
+                   ${result.exitValuation.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                 </p>
+                 {result.exitValuation >= 500000 && (
+                   <span className="inline-block mt-2 font-mono-system text-[10px] tracking-[0.15em] uppercase px-3 py-1 rounded-full border border-emerald-glow/40 text-emerald-glow">
+                     🏛️ Empire Territory
+                   </span>
+                 )}
+                 {result.exitValuation >= 250000 && result.exitValuation < 500000 && (
+                   <span className="inline-block mt-2 font-mono-system text-[10px] tracking-[0.15em] uppercase px-3 py-1 rounded-full border border-emerald-light/30 text-emerald-glow">
+                     🌲 Forest Scale
+                   </span>
+                 )}
+                 {result.exitValuation >= 100000 && result.exitValuation < 250000 && (
+                   <span className="inline-block mt-2 font-mono-system text-[10px] tracking-[0.15em] uppercase px-3 py-1 rounded-full border border-emerald-light/20 text-emerald-glow">
+                     🌱 Growth Milestone
+                   </span>
+                 )}
+               </div>
 
               {/* Breakdown Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

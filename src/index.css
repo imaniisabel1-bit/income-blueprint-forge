@@ -139,3 +139,25 @@
   from { width: 0%; }
   to { width: var(--meter-width); }
 }
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 60s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+@keyframes milestoneGlow {
+  0%, 100% { text-shadow: 0 0 10px hsl(var(--emerald-glow) / 0.3); }
+  50% { text-shadow: 0 0 30px hsl(var(--emerald-glow) / 0.8), 0 0 60px hsl(var(--emerald-glow) / 0.4); }
+}
+
+.animate-milestone-glow {
+  animation: milestoneGlow 2s ease-in-out infinite;
+}
