@@ -20,6 +20,7 @@ const defaultProducts = [
     description: "Complete system for researching, designing, and launching profitable low-content books on Amazon KDP.",
     features: ["Niche Research Template", "Cover Design Framework", "Launch Timeline Calendar"],
     stripe: STRIPE_PRODUCTS.kdp,
+    kitSlug: "kdp-infrastructure" as string | null,
   },
   {
     icon: Target,
@@ -29,6 +30,7 @@ const defaultProducts = [
     description: "The exact pin-to-profit system. 90-day implementation calendar with SEO-first strategy.",
     features: ["120-Pin Content Map", "SEO Keyword Matrix", "Revenue Tracking Dashboard"],
     stripe: STRIPE_PRODUCTS.pinterest,
+    kitSlug: "pinterest-blueprint",
   },
   {
     icon: Lock,
@@ -38,6 +40,7 @@ const defaultProducts = [
     description: "Monthly access to every system, tool, and live workshop. New modules deployed bi-weekly.",
     features: ["All Kits Included", "Live System Audits", "Private Community Access"],
     stripe: STRIPE_PRODUCTS.vault,
+    kitSlug: null,
   },
   {
     icon: MessageSquare,
@@ -47,6 +50,7 @@ const defaultProducts = [
     description: "1:1 infrastructure consulting. We build your business operating system from scratch.",
     features: ["Custom Business Blueprint", "Legal Structure Review", "90-Day Implementation Plan"],
     stripe: null,
+    kitSlug: null,
   },
   {
     icon: Heart,
@@ -56,6 +60,7 @@ const defaultProducts = [
     description: "Homeschool infrastructure & Family Legacy journals. High-ticket hardcover workbook bundles for SAHMs building generational assets.",
     features: ["Hardcover Workbook Bundle", "Homeschool Curricula Templates", "Family Legacy Journal System"],
     stripe: null,
+    kitSlug: "legacy-matriarch",
   },
   {
     icon: Briefcase,
@@ -65,6 +70,7 @@ const defaultProducts = [
     description: "Professional SOP Vaults. Sell the templates from your corporate career — project management trackers, HR frameworks, B2B digital downloads.",
     features: ["Corporate SOP Templates", "B2B Sales Framework", "Bulk Licensing Guide"],
     stripe: null,
+    kitSlug: "nine-to-five-exit",
   },
   {
     icon: Palette,
@@ -74,6 +80,7 @@ const defaultProducts = [
     description: "Digital Asset Flips for artists & Gen Z. Aesthetic Notion templates, Pinterest-driven digital wallpapers, and creative digital downloads.",
     features: ["Notion Template Pack", "Pinterest Visual Strategy", "Digital Wallpaper System"],
     stripe: null,
+    kitSlug: "creative-soul",
   },
 ];
 
@@ -204,9 +211,16 @@ const ProductLibrary = () => {
 
                 <div className="flex items-center justify-between pt-4 border-t border-border">
                   <span className="font-serif-display text-2xl font-bold text-gradient-emerald">{product.price}</span>
-                  <Button variant="emerald" size="sm" onClick={() => handleCheckout(product.stripe)}>
-                    {product.price === "Application" ? "Apply Now" : "Get Access"}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {product.kitSlug && (
+                      <Button variant="ghost-bone" size="sm" onClick={() => navigate(`/kits/${product.kitSlug}`)}>
+                        View Details
+                      </Button>
+                    )}
+                    <Button variant="emerald" size="sm" onClick={() => handleCheckout(product.stripe)}>
+                      {product.price === "Application" ? "Apply Now" : "Get Access"}
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
