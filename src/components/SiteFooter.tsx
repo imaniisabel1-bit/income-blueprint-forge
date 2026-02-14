@@ -25,13 +25,26 @@ const SiteFooter = () => {
               Platform
             </h4>
             <ul className="space-y-2">
-              {["Systems Library", "The Real World Lab", "Member Portal", "Consulting"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link to="/systems" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Systems Library
+                </Link>
+              </li>
+              <li>
+                <Link to="/lab" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  The Real World Lab
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Member Portal
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Consulting
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -51,14 +64,14 @@ const SiteFooter = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/ip-copyright" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
                   IP &amp; Copyright
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/earnings-disclaimer" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
                   Earnings Disclaimer
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
