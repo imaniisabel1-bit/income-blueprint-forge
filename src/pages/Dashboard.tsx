@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, BookOpen, Target, Lock, MessageSquare, Calculator } from "lucide-react";
+import { LogOut, BookOpen, Target, Lock, MessageSquare, Calculator, X, Play } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const kits = [
@@ -35,7 +35,18 @@ const kits = [
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Show welcome video on successful checkout
+    if (searchParams.get("success") === "true" || searchParams.get("checkout") === "success") {
+      setShowWelcome(true);
+      // Clean URL params
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -96,6 +107,43 @@ const Dashboard = () => {
       </header>
 
       <main className="container max-w-6xl px-6 py-12">
+        {/* Amaya Sol Welcome Video Modal */}
+        {showWelcome && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm animate-fade-in">
+            <div className="relative w-full max-w-2xl mx-6">
+              <button
+                onClick={() => setShowWelcome(false)}
+                className="absolute -top-12 right-0 p-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <div className="rounded-2xl border border-emerald-light/30 bg-card overflow-hidden shadow-emerald">
+                {/* Circular Video Container */}
+                <div className="flex flex-col items-center p-8 md:p-12">
+                  <div className="w-48 h-48 md:w-56 md:h-56 rounded-full border-4 border-emerald-light/30 overflow-hidden bg-secondary mb-6 flex items-center justify-center">
+                    <div className="text-center">
+                      <Play className="h-12 w-12 text-emerald-glow mx-auto mb-2" />
+                      <p className="font-mono-system text-[10px] text-muted-foreground">Video Coming Soon</p>
+                    </div>
+                  </div>
+                  <p className="font-mono-system text-[10px] tracking-[0.3em] uppercase text-emerald-glow mb-2">
+                    Welcome to the Sol-System
+                  </p>
+                  <h2 className="font-serif-display text-2xl md:text-3xl font-bold text-center mb-3">
+                    Your Infrastructure is <span className="italic text-gradient-emerald">Ready</span>
+                  </h2>
+                  <p className="font-mono-system text-xs text-muted-foreground text-center max-w-md mb-6">
+                    I'm Amaya Sol, and I want to officially welcome you. You didn't just buy a digital file — you secured the blueprints for a sellable enterprise.
+                  </p>
+                  <Button variant="emerald" onClick={() => setShowWelcome(false)}>
+                    Enter Your Dashboard
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Welcome */}
         <div className="mb-12">
           <p className="font-mono-system text-xs tracking-[0.3em] uppercase text-emerald-glow mb-2">
