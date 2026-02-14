@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, BookOpen, Target, Lock, MessageSquare, Sparkles, Loader2 } from "lucide-react";
+import { ArrowUpRight, BookOpen, Target, Lock, MessageSquare, Sparkles, Loader2, Heart, Briefcase, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -46,6 +46,33 @@ const defaultProducts = [
     price: "Application",
     description: "1:1 infrastructure consulting. We build your business operating system from scratch.",
     features: ["Custom Business Blueprint", "Legal Structure Review", "90-Day Implementation Plan"],
+    stripe: null,
+  },
+  {
+    icon: Heart,
+    tag: "LEGACY KIT",
+    title: "The Legacy Matriarch Kit",
+    price: "$45",
+    description: "Homeschool infrastructure & Family Legacy journals. High-ticket hardcover workbook bundles for SAHMs building generational assets.",
+    features: ["Hardcover Workbook Bundle", "Homeschool Curricula Templates", "Family Legacy Journal System"],
+    stripe: null,
+  },
+  {
+    icon: Briefcase,
+    tag: "EXIT KIT",
+    title: 'The "9-to-5 Exit" Kit',
+    price: "$37",
+    description: "Professional SOP Vaults. Sell the templates from your corporate career — project management trackers, HR frameworks, B2B digital downloads.",
+    features: ["Corporate SOP Templates", "B2B Sales Framework", "Bulk Licensing Guide"],
+    stripe: null,
+  },
+  {
+    icon: Palette,
+    tag: "CREATIVE KIT",
+    title: 'The "Creative Soul" Kit',
+    price: "$27",
+    description: "Digital Asset Flips for artists & Gen Z. Aesthetic Notion templates, Pinterest-driven digital wallpapers, and creative digital downloads.",
+    features: ["Notion Template Pack", "Pinterest Visual Strategy", "Digital Wallpaper System"],
     stripe: null,
   },
 ];
