@@ -45,12 +45,15 @@ const TERM_DEFINITIONS: Record<string, string> = {
 };
 
 const TermLabel = ({ term, label }: { term: string; label?: string }) => (
-  <TooltipProvider>
+  <TooltipProvider delayDuration={0}>
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="inline-flex items-center gap-1 cursor-help border-b border-dashed border-muted-foreground/40">
+        <span
+          className="inline-flex items-center gap-1 cursor-help border-b border-dashed border-muted-foreground/40 py-1 px-0.5 touch-manipulation"
+          onClick={(e) => e.preventDefault()}
+        >
           {label || term}
-          <Info className="h-2.5 w-2.5 text-muted-foreground" />
+          <Info className="h-3 w-3 text-muted-foreground shrink-0" />
         </span>
       </TooltipTrigger>
       <TooltipContent className="max-w-xs bg-card border-border">
@@ -230,44 +233,52 @@ const BusinessCalculator = () => {
             Calculate Reality Profit
           </Button>
 
-          {/* Result — Waterfall Breakdown */}
+          {/* Result — Hierarchy of Profit */}
           {result && (
-            <div className="rounded-lg border border-emerald-light/20 bg-secondary/50 p-6 animate-fade-in">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center mb-4">
-                <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-                    <TermLabel term="Gross Revenue" />
+            <div className="rounded-lg border border-emerald-light/20 bg-secondary/50 p-6 md:p-8 animate-fade-in">
+              {/* Waterfall Steps */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-between py-2">
+                  <p className="font-mono-system text-xs text-muted-foreground">
+                    <TermLabel term="Gross Revenue" label="Gross Total" />
                   </p>
                   <p className="font-mono-system text-lg font-bold text-foreground">${result.grossRevenue.toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-                    <TermLabel term="Printing Fee" />
+                <div className="flex items-center justify-between py-2 border-t border-border">
+                  <p className="font-mono-system text-xs text-muted-foreground">
+                    <TermLabel term="Printing Fee" label='The "Amazon/Vending" Cut (Fees)' />
                   </p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.printingFee.toFixed(2)}</p>
+                  <p className="font-mono-system text-sm font-bold text-destructive">-${(result.printingFee + result.amazonCommission).toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-                    <TermLabel term="Amazon Commission" label="Amazon (40%)" />
+                <div className="flex items-center justify-between py-2 border-t border-border">
+                  <p className="font-mono-system text-xs text-muted-foreground">
+                    <TermLabel term="Tax Reserve" label='The "Uncle Sam" Reserve (Taxes)' />
                   </p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.amazonCommission.toFixed(2)}</p>
+                  <p className="font-mono-system text-sm font-bold text-destructive">-${result.taxReserve.toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-                    <TermLabel term="Ad-Ceiling" label="Ad-Spend (20%)" />
+                <div className="flex items-center justify-between py-2 border-t border-border">
+                  <p className="font-mono-system text-xs text-muted-foreground">
+                    <TermLabel term="Ad-Ceiling" label='The "Scaling Budget" (Ads/Marketing)' />
                   </p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.adSpend.toFixed(2)}</p>
+                  <p className="font-mono-system text-sm font-bold text-destructive">-${result.adSpend.toFixed(2)}</p>
                 </div>
-                <div>
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-                    <TermLabel term="Tax Reserve" label="Tax Reserve (25%)" />
-                  </p>
-                  <p className="font-mono-system text-lg font-bold text-destructive">-${result.taxReserve.toFixed(2)}</p>
-                </div>
-                <div className="border-l border-emerald-light/20 pl-4">
-                  <p className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow mb-1">
-                    <TermLabel term="Take-Home Profit" label="Take-Home" />
-                  </p>
+                <div className="flex items-center justify-between py-3 px-4 mt-2 border-t-2 border-emerald-light/30 rounded-lg bg-card">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="font-mono-system text-sm font-bold text-emerald-glow cursor-help inline-flex items-center gap-1.5">
+                          NET REALITY PROFIT
+                          <Info className="h-3 w-3" />
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs bg-card border-border">
+                        <p className="font-mono-system text-xs">
+                          <span className="text-emerald-glow font-bold">Your Take Home:</span>{" "}
+                          This is the money that hits your business bank account. It is 100% yours to reinvest or pay yourself.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <p className="font-serif-display text-3xl font-bold text-gradient-emerald">${result.takeHome.toFixed(2)}</p>
                 </div>
               </div>

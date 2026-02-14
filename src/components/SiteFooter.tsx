@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const SiteFooter = () => {
   return (
     <footer className="border-t border-border bg-secondary/20 py-16 px-6">
@@ -38,13 +40,26 @@ const SiteFooter = () => {
               Legal
             </h4>
             <ul className="space-y-2">
-              {["Terms of Service", "Privacy Policy", "IP & Copyright", "Earnings Disclaimer"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link to="/terms" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  IP &amp; Copyright
+                </a>
+              </li>
+              <li>
+                <a href="#" className="font-mono-system text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Earnings Disclaimer
+                </a>
+              </li>
             </ul>
           </div>
         </div>

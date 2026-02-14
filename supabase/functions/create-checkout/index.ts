@@ -44,7 +44,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: sessionMode,
-      success_url: `${req.headers.get("origin")}/dashboard?checkout=success`,
+      success_url: `${req.headers.get("origin")}/dashboard?checkout=success&success=true`,
       cancel_url: `${req.headers.get("origin")}/#products`,
     });
 
@@ -53,7 +53,11 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("Checkout creation failed:", error);
+    const userMessage = error.message?.includes("User not authenticated")
+      ? "Please sign in to continue with checkout."
+      : "Unable to create checkout session. Please try again.";
+    return new Response(JSON.stringify({ error: userMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
