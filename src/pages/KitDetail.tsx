@@ -232,8 +232,8 @@ const KitDetail = () => {
             <h2 className="font-serif-display text-3xl font-bold mb-8 text-center">
               The <span className="italic text-gradient-emerald">Math</span>
             </h2>
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <table className="w-full">
+            <div className="rounded-xl border border-border bg-card overflow-x-auto">
+              <table className="w-full min-w-[400px]">
                 <thead>
                   <tr className="border-b border-border">
                     <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-left p-4">Period</th>
