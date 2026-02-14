@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Play, CheckCircle } from "lucide-react";
+import { ArrowLeft, Play, CheckCircle, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -15,6 +15,7 @@ const KIT_DATA: Record<string, {
   heroDescription: string;
   projections: { period: string; units: number; revenue: string; profit: string }[];
   deliverables: string[];
+  canvaEmbedUrl: string | null;
 }> = {
   "kdp-infrastructure": {
     title: "KDP Infrastructure Kit",
@@ -36,6 +37,7 @@ const KIT_DATA: Record<string, {
       "Amazon SEO Keyword Research Guide",
       "Post-Launch Optimization Checklist",
     ],
+    canvaEmbedUrl: null,
   },
   "pinterest-blueprint": {
     title: "Affiliate Pinterest Blueprint",
@@ -57,6 +59,7 @@ const KIT_DATA: Record<string, {
       "Analytics & Optimization Playbook",
       "Monthly Content Calendar Templates",
     ],
+    canvaEmbedUrl: null,
   },
   "legacy-matriarch": {
     title: "The Legacy Matriarch Kit",
@@ -78,6 +81,7 @@ const KIT_DATA: Record<string, {
       "Pricing Strategy for High-Ticket Books",
       "Marketing Playbook for SAHM Audience",
     ],
+    canvaEmbedUrl: null,
   },
   "nine-to-five-exit": {
     title: 'The "9-to-5 Exit" Kit',
@@ -99,6 +103,7 @@ const KIT_DATA: Record<string, {
       "LinkedIn Marketing Strategy Guide",
       "Exit Timeline & Revenue Calculator",
     ],
+    canvaEmbedUrl: null,
   },
   "creative-soul": {
     title: 'The "Creative Soul" Kit',
@@ -120,6 +125,7 @@ const KIT_DATA: Record<string, {
       "Brand Aesthetic Framework",
       "Content Repurposing Calendar",
     ],
+    canvaEmbedUrl: null,
   },
 };
 
@@ -190,6 +196,32 @@ const KitDetail = () => {
                 </div>
                 <p className="font-mono-system text-xs text-muted-foreground">Amaya Sol Kit Walkthrough</p>
               </div>
+            </div>
+
+            {/* Canva Flipbook Embed */}
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              {kit.canvaEmbedUrl ? (
+                <div className="aspect-[4/3]">
+                  <iframe
+                    src={kit.canvaEmbedUrl}
+                    className="w-full h-full border-0"
+                    allowFullScreen
+                    title={`${kit.title} Preview`}
+                  />
+                </div>
+              ) : (
+                <div className="aspect-[4/3] flex flex-col items-center justify-center gap-4 bg-secondary/20">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-emerald flex items-center justify-center">
+                    <BookOpen className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div className="text-center px-6">
+                    <p className="font-serif-display text-lg font-bold mb-1">Interactive Preview</p>
+                    <p className="font-mono-system text-xs text-muted-foreground max-w-sm">
+                      Flipbook coming soon — browse deliverables below to see what's inside this kit.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
