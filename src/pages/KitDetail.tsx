@@ -232,23 +232,23 @@ const KitDetail = () => {
             <h2 className="font-serif-display text-3xl font-bold mb-8 text-center">
               The <span className="italic text-gradient-emerald">Math</span>
             </h2>
-            <div className="rounded-xl border border-border bg-card overflow-x-auto">
-              <table className="w-full min-w-[400px]">
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-left p-4">Period</th>
-                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-right p-4">Units</th>
-                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-right p-4">Revenue</th>
-                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow text-right p-4">Net Profit</th>
+                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-left p-2 md:p-4">Period</th>
+                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-right p-2 md:p-4">Units</th>
+                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-muted-foreground text-right p-2 md:p-4">Revenue</th>
+                    <th className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow text-right p-2 md:p-4">Net Profit</th>
                   </tr>
                 </thead>
                 <tbody>
                   {kit.projections.map((row) => (
                     <tr key={row.period} className="border-b border-border last:border-0">
-                      <td className="font-mono-system text-sm p-4">{row.period}</td>
-                      <td className="font-mono-system text-sm text-right p-4">{row.units}</td>
-                      <td className="font-mono-system text-sm text-right p-4">{row.revenue}</td>
-                      <td className="font-serif-display text-lg font-bold text-gradient-emerald text-right p-4">{row.profit}</td>
+                      <td className="font-mono-system text-xs md:text-sm p-2 md:p-4">{row.period}</td>
+                      <td className="font-mono-system text-xs md:text-sm text-right p-2 md:p-4">{row.units}</td>
+                      <td className="font-mono-system text-xs md:text-sm text-right p-2 md:p-4">{row.revenue}</td>
+                      <td className="font-serif-display text-sm md:text-lg font-bold text-gradient-emerald text-right p-2 md:p-4">{row.profit}</td>
                     </tr>
                   ))}
                 </tbody>
