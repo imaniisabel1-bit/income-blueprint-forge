@@ -7,22 +7,35 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageLoader from "@/components/PageLoader";
 import FloatingMiniPlayer from "./components/FloatingMiniPlayer";
 
-const Index = lazy(() => import("./pages/Index"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Systems = lazy(() => import("./pages/Systems"));
-const Lab = lazy(() => import("./pages/Lab"));
-const Podcast = lazy(() => import("./pages/Podcast"));
-const About = lazy(() => import("./pages/About"));
-const KitDetail = lazy(() => import("./pages/KitDetail"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TradingDashboard = lazy(() => import("./pages/TradingDashboard"));
-const VelocityReport = lazy(() => import("./pages/VelocityReport"));
-const IPCopyright = lazy(() => import("./pages/IPCopyright"));
-const EarningsDisclaimer = lazy(() => import("./pages/EarningsDisclaimer"));
-const AdminPortal = lazy(() => import("./pages/AdminPortal"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const lazyRetry = (importFn: () => Promise<any>) =>
+  lazy(() =>
+    importFn().catch(() => {
+      // Stale chunk after rebuild — reload once
+      if (!sessionStorage.getItem("chunk_retry")) {
+        sessionStorage.setItem("chunk_retry", "1");
+        window.location.reload();
+      }
+      sessionStorage.removeItem("chunk_retry");
+      return importFn();
+    })
+  );
+
+const Index = lazyRetry(() => import("./pages/Index"));
+const Auth = lazyRetry(() => import("./pages/Auth"));
+const Dashboard = lazyRetry(() => import("./pages/Dashboard"));
+const Systems = lazyRetry(() => import("./pages/Systems"));
+const Lab = lazyRetry(() => import("./pages/Lab"));
+const Podcast = lazyRetry(() => import("./pages/Podcast"));
+const About = lazyRetry(() => import("./pages/About"));
+const KitDetail = lazyRetry(() => import("./pages/KitDetail"));
+const TermsOfService = lazyRetry(() => import("./pages/TermsOfService"));
+const PrivacyPolicy = lazyRetry(() => import("./pages/PrivacyPolicy"));
+const TradingDashboard = lazyRetry(() => import("./pages/TradingDashboard"));
+const VelocityReport = lazyRetry(() => import("./pages/VelocityReport"));
+const IPCopyright = lazyRetry(() => import("./pages/IPCopyright"));
+const EarningsDisclaimer = lazyRetry(() => import("./pages/EarningsDisclaimer"));
+const AdminPortal = lazyRetry(() => import("./pages/AdminPortal"));
+const NotFound = lazyRetry(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
