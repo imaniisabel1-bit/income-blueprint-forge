@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowUpRight, BookOpen, Target, Lock, MessageSquare, Sparkles, Loader2, Heart, Briefcase, Palette } from "lucide-react";
+import AmayaBriefingVideo from "@/components/AmayaBriefingVideo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -193,12 +194,16 @@ const ProductLibrary = () => {
                   </div>
                 </div>
 
-                <div className="w-10 h-10 rounded-lg bg-gradient-emerald flex items-center justify-center mb-5">
-                  <Icon className="h-5 w-5 text-primary-foreground" />
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-emerald flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-serif-display text-2xl font-bold mb-1">{product.title}</h3>
+                    <p className="font-mono-system text-xs text-muted-foreground">{product.description}</p>
+                  </div>
+                  <AmayaBriefingVideo size="sm" />
                 </div>
-
-                <h3 className="font-serif-display text-2xl font-bold mb-2">{product.title}</h3>
-                <p className="font-mono-system text-xs text-muted-foreground mb-4 flex-1">{product.description}</p>
 
                 <ul className="space-y-2 mb-6">
                   {product.features.map((feature) => (
