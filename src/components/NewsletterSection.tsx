@@ -6,7 +6,11 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-const NewsletterSection = () => {
+interface NewsletterSectionProps {
+  source?: string;
+}
+
+const NewsletterSection = ({ source = "vault_form" }: NewsletterSectionProps) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
@@ -17,16 +21,18 @@ const NewsletterSection = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .insert({ email: email.trim() } as any);
+      // Insert into both tables for backwards compatibility
+      const [legacyResult, leadResult] = await Promise.allSettled([
+        supabase.from("newsletter_subscribers").insert({ email: email.trim() } as any),
+        supabase.from("founding_architect_leads").insert({ email: email.trim(), source } as any),
+      ]);
 
-      if (error) {
-        if (error.code === "23505") {
-          toast({ title: "Already subscribed", description: "You're already in the Sol-System." });
-        } else {
-          toast({ title: "Error", description: "Could not subscribe. Please try again.", variant: "destructive" });
-        }
+      const legacyError = legacyResult.status === "fulfilled" ? legacyResult.value.error : null;
+      const leadError = leadResult.status === "fulfilled" ? leadResult.value.error : null;
+
+      // If both are duplicate errors, they're already subscribed
+      if (legacyError?.code === "23505" && leadError?.code === "23505") {
+        toast({ title: "Already subscribed", description: "You're already in the Sol-System." });
         return;
       }
 

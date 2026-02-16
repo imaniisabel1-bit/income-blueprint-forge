@@ -38,6 +38,27 @@ export type Database = {
         }
         Relationships: []
       }
+      founding_architect_leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       income_kits: {
         Row: {
           base_pages: number | null
