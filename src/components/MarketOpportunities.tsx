@@ -10,6 +10,7 @@ const opportunities = [
     monthlyRevenue: "$4,200/mo",
     description: "Established locations in gyms and coworking spaces. All machines less than 2 years old. Seller-financed option available.",
     source: "BizBuySell",
+    url: "https://www.bizbuysell.com/vending-machine-businesses-for-sale/",
   },
   {
     icon: BookOpen,
@@ -19,6 +20,7 @@ const opportunities = [
     monthlyRevenue: "$2,800/mo",
     description: "Evergreen planner niche with 4.3★ avg reviews. Includes all design files, keyword research, and ad accounts.",
     source: "Empire Flippers",
+    url: "https://empireflippers.com/marketplace/",
   },
   {
     icon: TrendingUp,
@@ -28,6 +30,7 @@ const opportunities = [
     monthlyRevenue: "$1,600/mo",
     description: "12 templates with 8,000+ sales. Includes Gumroad storefront, email list of 3,200 subscribers, and all IP.",
     source: "Empire Flippers",
+    url: "https://empireflippers.com/marketplace/",
   },
 ];
 
@@ -80,9 +83,11 @@ const MarketOpportunities = () => {
                   </div>
                 </div>
 
-                <Button variant="ghost-bone" size="sm" className="w-full">
-                  <ExternalLink className="h-3 w-3 mr-2" />
-                  View Listing
+                <Button variant="ghost-bone" size="sm" className="w-full" asChild>
+                  <a href={opp.url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-3 w-3 mr-2" />
+                    View Listing
+                  </a>
                 </Button>
               </div>
             );

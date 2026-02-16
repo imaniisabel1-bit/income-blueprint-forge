@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, Play, Clock, Mail, CheckCircle, Loader2 } from "lucide-react";
+import { Mic, Play, Clock, Mail, CheckCircle, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ const PLACEHOLDER_EPISODES = [
     description: "How the 2026 tax changes create new LLC loopholes — and who they were really designed for.",
     duration: "38 min",
     status: "coming-soon" as const,
+    spotifyEmbedId: null as string | null,
   },
   {
     number: "002",
@@ -21,6 +22,7 @@ const PLACEHOLDER_EPISODES = [
     description: "Why vending machines, digital kits, and community spaces are the new 401(k) for women of color.",
     duration: "42 min",
     status: "coming-soon" as const,
+    spotifyEmbedId: null,
   },
   {
     number: "003",
@@ -29,6 +31,7 @@ const PLACEHOLDER_EPISODES = [
     description: "Breaking down how to present your numbers to banks, investors, and your mama — differently.",
     duration: "35 min",
     status: "coming-soon" as const,
+    spotifyEmbedId: null,
   },
 ];
 
@@ -45,7 +48,10 @@ const PodcastSection = () => {
     }
     setSubmitting(true);
     try {
-      await supabase.from("newsletter_subscribers").insert({ email });
+      await Promise.allSettled([
+        supabase.from("newsletter_subscribers").insert({ email }),
+        supabase.from("founding_architect_leads").insert({ email, source: "podcast_page" } as any),
+      ]);
       setSubmitted(true);
       toast({ title: "You're in the Sol-System ✓", description: "You'll get 2026 enterprise alerts and launch notifications." });
     } catch {
@@ -63,7 +69,7 @@ const PodcastSection = () => {
           <p className="font-mono-system text-xs tracking-[0.3em] uppercase text-emerald-glow mb-4">
             The Audience Moat
           </p>
-          <h2 className="font-serif-display text-4xl md:text-5xl font-bold mb-4">
+        <h2 className="font-serif-display text-4xl md:text-5xl font-bold mb-4">
             The <span className="italic text-gradient-emerald">American Reality</span> Podcast
           </h2>
           <p className="font-mono-system text-sm text-muted-foreground max-w-xl mx-auto">
@@ -72,57 +78,65 @@ const PodcastSection = () => {
           </p>
         </div>
 
-        {/* Podcast Card */}
-        <div className="rounded-xl border border-border bg-card p-8 md:p-12 mb-8">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-16 h-16 rounded-xl bg-gradient-emerald flex items-center justify-center shrink-0">
-              <Mic className="h-7 w-7 text-primary-foreground" />
-            </div>
-            <div>
-              <h3 className="font-serif-display text-2xl font-bold">IncomeDeck Podcast</h3>
-              <p className="font-mono-system text-xs text-muted-foreground">
-                Code-Switching for the New Economy
-              </p>
-            </div>
-          </div>
-
-          {/* Episodes */}
-          <div className="space-y-4">
-            {PLACEHOLDER_EPISODES.map((ep) => (
-              <div
-                key={ep.number}
-                className="group flex items-start gap-4 p-4 rounded-lg border border-border bg-secondary/30 hover:border-emerald-light/30 transition-all duration-300"
-              >
-                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 group-hover:bg-emerald-DEFAULT/20 transition-colors">
-                  <Play className="h-4 w-4 text-muted-foreground group-hover:text-emerald-glow transition-colors" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow">
-                      EP {ep.number}
-                    </span>
-                    <span className="font-mono-system text-[10px] text-muted-foreground">·</span>
-                    <span className="font-mono-system text-[10px] uppercase text-muted-foreground">
-                      {ep.topic}
+        {/* Episode Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {PLACEHOLDER_EPISODES.map((ep) => (
+            <div
+              key={ep.number}
+              className="rounded-xl border border-border bg-card overflow-hidden flex flex-col"
+            >
+              {/* Spotify Embed or Placeholder */}
+              <div className="aspect-square bg-secondary/50 flex items-center justify-center relative">
+                {ep.spotifyEmbedId ? (
+                  <iframe
+                    src={`https://open.spotify.com/embed/episode/${ep.spotifyEmbedId}?utm_source=generator&theme=0`}
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="absolute inset-0"
+                  />
+                ) : (
+                  <div className="text-center p-6">
+                    <div className="w-16 h-16 rounded-full bg-gradient-emerald flex items-center justify-center mx-auto mb-3">
+                      <Play className="h-6 w-6 text-primary-foreground ml-1" />
+                    </div>
+                    <span className="font-mono-system text-[10px] tracking-[0.15em] uppercase px-3 py-1 rounded-full border border-emerald-light/20 text-emerald-glow">
+                      coming soon
                     </span>
                   </div>
-                  <h4 className="font-serif-display text-lg font-bold mb-1 truncate">{ep.title}</h4>
-                  <p className="font-mono-system text-xs text-muted-foreground line-clamp-2">
-                    {ep.description}
-                  </p>
+                )}
+              </div>
+
+              {/* Episode Info */}
+              <div className="p-5 flex flex-col flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-mono-system text-[10px] tracking-[0.2em] uppercase text-emerald-glow">
+                    EP {ep.number}
+                  </span>
+                  <span className="font-mono-system text-[10px] text-muted-foreground">·</span>
+                  <span className="font-mono-system text-[10px] uppercase text-muted-foreground">
+                    {ep.topic}
+                  </span>
                 </div>
-                <div className="flex flex-col items-end gap-2 shrink-0">
+                <h4 className="font-serif-display text-lg font-bold mb-2">{ep.title}</h4>
+                <p className="font-mono-system text-xs text-muted-foreground mb-4 flex-1">
+                  {ep.description}
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-border">
                   <span className="flex items-center gap-1 font-mono-system text-[10px] text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     {ep.duration}
                   </span>
-                  <span className="font-mono-system text-[10px] tracking-[0.15em] uppercase px-2 py-0.5 rounded-full border border-emerald-light/20 text-emerald-glow">
-                    coming soon
-                  </span>
+                  <Button variant="ghost-bone" size="sm" disabled className="opacity-50">
+                    <Download className="h-3 w-3 mr-1" />
+                    Transcript
+                  </Button>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Newsletter Signup */}

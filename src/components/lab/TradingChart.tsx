@@ -41,7 +41,7 @@ const TradingChart = () => {
             Advanced <span className="italic text-gradient-emerald">Chart</span>
           </h2>
         </div>
-        <div className="rounded-xl border border-border overflow-hidden" style={{ height: "500px" }}>
+        <div className="rounded-xl border border-border overflow-hidden w-full" style={{ height: "clamp(300px, 60vw, 500px)" }}>
           <div ref={containerRef} className="tradingview-widget-container" style={{ height: "100%", width: "100%" }}>
             <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }} />
           </div>

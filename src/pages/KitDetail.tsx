@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, CheckCircle, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import ProductFlipbook from "@/components/ProductFlipbook";
 
 const KIT_DATA: Record<string, {
   title: string;
@@ -198,29 +199,33 @@ const KitDetail = () => {
               </div>
             </div>
 
-            {/* Canva Flipbook Embed */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
+            {/* Interactive Product Preview */}
+            <div className="py-8">
+              <p className="font-mono-system text-xs tracking-[0.3em] uppercase text-emerald-glow mb-6 text-center">
+                Inside the Infrastructure
+              </p>
               {kit.canvaEmbedUrl ? (
-                <div className="aspect-[4/3]">
-                  <iframe
-                    src={kit.canvaEmbedUrl}
-                    className="w-full h-full border-0"
-                    allowFullScreen
-                    title={`${kit.title} Preview`}
-                  />
+                <div className="rounded-xl border-2 border-border bg-card overflow-hidden max-w-md mx-auto">
+                  {/* MacBook-style frame */}
+                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-border bg-secondary/50">
+                    <div className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-gold/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-glow/60" />
+                    <span className="flex-1 text-center font-mono-system text-[9px] text-muted-foreground">
+                      preview.sol-system.global
+                    </span>
+                  </div>
+                  <div className="aspect-[4/3]">
+                    <iframe
+                      src={kit.canvaEmbedUrl}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      title={`${kit.title} Preview`}
+                    />
+                  </div>
                 </div>
               ) : (
-                <div className="aspect-[4/3] flex flex-col items-center justify-center gap-4 bg-secondary/20">
-                  <div className="w-14 h-14 rounded-lg bg-gradient-emerald flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div className="text-center px-6">
-                    <p className="font-serif-display text-lg font-bold mb-1">Interactive Preview</p>
-                    <p className="font-mono-system text-xs text-muted-foreground max-w-sm">
-                      Flipbook coming soon — browse deliverables below to see what's inside this kit.
-                    </p>
-                  </div>
-                </div>
+                <ProductFlipbook />
               )}
             </div>
           </div>
