@@ -9,12 +9,12 @@ const SiteFooter = () => {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-md bg-gradient-emerald flex items-center justify-center">
-                <span className="font-serif-display text-sm font-bold text-primary-foreground">ID</span>
+              <span className="font-serif-display text-sm font-bold text-primary-foreground">SS</span>
               </div>
-              <span className="font-serif-display text-lg font-bold">IncomeDeck</span>
+              <span className="font-serif-display text-lg font-bold">Sol-System Global</span>
             </div>
             <p className="font-mono-system text-xs text-muted-foreground leading-relaxed max-w-sm">
-              IncomeDeck is a proprietary systems platform. All methodologies,
+              Sol-System Global is a proprietary systems platform. All methodologies,
               frameworks, and calculation engines are protected intellectual property.
             </p>
           </div>
@@ -80,7 +80,7 @@ const SiteFooter = () => {
         {/* Legal & Transparency Bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="font-mono-system text-[10px] text-muted-foreground">
-            © {new Date().getFullYear()} IncomeDeck LLC. All rights reserved. All systems and methodologies are proprietary.
+            © {new Date().getFullYear()} Sol-System Global LLC. All rights reserved. All systems and methodologies are proprietary.
           </p>
           <div className="flex items-center gap-4">
             <span className="font-mono-system text-[10px] text-muted-foreground flex items-center gap-1">

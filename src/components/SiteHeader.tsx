@@ -32,9 +32,9 @@ const SiteHeader = () => {
         <div className="container max-w-6xl flex items-center justify-between h-16 px-6">
           <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }} className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-md bg-gradient-emerald flex items-center justify-center">
-              <span className="font-serif-display text-sm font-bold text-primary-foreground">ID</span>
+              <span className="font-serif-display text-sm font-bold text-primary-foreground">SS</span>
             </div>
-            <span className="font-serif-display text-lg font-bold tracking-tight">IncomeDeck</span>
+            <span className="font-serif-display text-lg font-bold tracking-tight">Sol-System Global</span>
           </a>
 
           <nav className="hidden md:flex items-center gap-8">
