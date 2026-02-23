@@ -3,6 +3,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, CheckCircle, BookOpen } from "lucide-react";
+import KdpAdScript from "@/components/KdpAdScript";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import ProductFlipbook from "@/components/ProductFlipbook";
@@ -230,6 +231,9 @@ const KitDetail = () => {
             </div>
           </div>
         </section>
+
+        {/* Ad Script — KDP only */}
+        {id === "kdp-infrastructure" && <KdpAdScript />}
 
         {/* Math Block */}
         <section className="py-16 px-6 bg-secondary/30">
