@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Shield, Terminal, Users, Copy, Loader2, Trash2, Plus, Rocket } from "lucide-react";
+import { Shield, Terminal, Users, Copy, Loader2, Trash2, Plus, Rocket, BarChart3 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import LaunchCommand from "@/components/admin/LaunchCommand";
+import KdpListingOptimizer from "@/components/admin/KdpListingOptimizer";
 
 const AMAYA_ALPHA_V2 = `//@version=5
 strategy("Amaya Alpha v2.0 - Private Proprietary", overlay=true, initial_capital=10000, currency=currency.USD)
@@ -195,6 +196,9 @@ const AdminPortal = () => {
             <TabsTrigger value="invites" className="font-mono-system text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="h-3.5 w-3.5" /> Invite Access
             </TabsTrigger>
+            <TabsTrigger value="kdp-optimizer" className="font-mono-system text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <BarChart3 className="h-3.5 w-3.5" /> KDP Optimizer
+            </TabsTrigger>
           </TabsList>
 
           {/* LAUNCH COMMAND */}
@@ -340,6 +344,11 @@ const AdminPortal = () => {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* KDP LISTING OPTIMIZER */}
+          <TabsContent value="kdp-optimizer">
+            <KdpListingOptimizer />
           </TabsContent>
         </Tabs>
       </main>
